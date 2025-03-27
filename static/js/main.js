@@ -89,11 +89,19 @@ function handleGesture(gesture) {
     console.log('Current volume:', videoPlayer.volume);
     
     // Add debouncing to prevent rapid-fire gestures
-    if (window.lastGestureTime && Date.now() - window.lastGestureTime < 500) {
+    if (window.lastGestureTime && Date.now() - window.lastGestureTime < 2000) {  // Increased to 2 seconds
         console.log('Gesture ignored - too soon after last gesture');
         return;
     }
+    
+    // Check if this is the same gesture as last time
+    if (window.lastGesture === gesture) {
+        console.log('Gesture ignored - same as last gesture');
+        return;
+    }
+    
     window.lastGestureTime = Date.now();
+    window.lastGesture = gesture;
     
     switch(gesture) {
         case 'thumbs_up':

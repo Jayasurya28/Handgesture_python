@@ -18,9 +18,10 @@ class TVController:
             "stop": "space"
         }
         
-        # Initialize last command time to prevent rapid-fire commands
+        # Initialize last command time and last gesture to prevent rapid-fire commands
         self.last_command_time = 0
-        self.COMMAND_COOLDOWN = 1.0  # seconds
+        self.last_gesture = None
+        self.COMMAND_COOLDOWN = 2.0  # Increased to 2 seconds
         
     def execute_command(self, gesture: str) -> bool:
         """
@@ -38,6 +39,10 @@ class TVController:
         if current_time - self.last_command_time < self.COMMAND_COOLDOWN:
             return False
             
+        # Check if this is the same gesture as last time
+        if gesture == self.last_gesture:
+            return False
+            
         # Get the corresponding key for the gesture
         key = self.key_mappings.get(gesture)
         if not key:
@@ -53,8 +58,9 @@ class TVController:
             else:
                 pyautogui.press(key)
                 
-            # Update last command time
+            # Update last command time and last gesture
             self.last_command_time = current_time
+            self.last_gesture = gesture
             return True
             
         except Exception as e:
