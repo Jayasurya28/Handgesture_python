@@ -1,0 +1,10 @@
+fastapi==0.109.2
+uvicorn==0.27.1
+opencv-python==4.8.1.78
+mediapipe==0.10.8
+numpy>=1.24.0
+pyautogui>=0.9.54
+python-multipart==0.0.9
+pydantic==2.6.1
+python-dotenv==1.0.1
+jinja2==3.1.3 
