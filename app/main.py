@@ -188,6 +188,8 @@ async def delete_gesture(gesture_name: str, filename: str):
 async def websocket_endpoint(websocket: WebSocket):
     """WebSocket endpoint for real-time gesture detection."""
     await websocket.accept()
+    print("WebSocket connection established")
+    
     try:
         while True:
             # Receive frame data from client
@@ -199,6 +201,10 @@ async def websocket_endpoint(websocket: WebSocket):
             nparr = np.frombuffer(img_data, np.uint8)
             frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
             
+            if frame is None:
+                print("Error: Could not decode frame")
+                continue
+                
             # Process gesture
             gesture = gesture_detector.detect_gesture({'frame': frame})
             
@@ -216,10 +222,13 @@ async def websocket_endpoint(websocket: WebSocket):
                     "gesture": None,
                     "status": "no_gesture_detected"
                 })
+                
     except WebSocketDisconnect:
         print("Client disconnected")
     except Exception as e:
-        print(f"WebSocket error: {e}")
+        print(f"WebSocket error: {str(e)}")
+        import traceback
+        traceback.print_exc()
     finally:
         await websocket.close()
 

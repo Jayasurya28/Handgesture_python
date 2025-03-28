@@ -7,7 +7,7 @@ class TVController:
         """Initialize the TV controller."""
         # Set pyautogui safety settings
         pyautogui.FAILSAFE = True
-        pyautogui.PAUSE = 0.5
+        pyautogui.PAUSE = 0.1  # Reduced pause time for faster response
         
         # Define key mappings for different TV controls
         self.key_mappings = {
@@ -18,10 +18,9 @@ class TVController:
             "stop": "space"
         }
         
-        # Initialize last command time and last gesture to prevent rapid-fire commands
+        # Initialize last command time to prevent rapid-fire commands
         self.last_command_time = 0
-        self.last_gesture = None
-        self.COMMAND_COOLDOWN = 2.0  # Increased to 2 seconds
+        self.COMMAND_COOLDOWN = 0.5  # Reduced to 500ms for faster response
         
     def execute_command(self, gesture: str) -> bool:
         """
@@ -39,10 +38,6 @@ class TVController:
         if current_time - self.last_command_time < self.COMMAND_COOLDOWN:
             return False
             
-        # Check if this is the same gesture as last time
-        if gesture == self.last_gesture:
-            return False
-            
         # Get the corresponding key for the gesture
         key = self.key_mappings.get(gesture)
         if not key:
@@ -52,15 +47,14 @@ class TVController:
             # Execute the command
             if gesture in ["left_swipe", "right_swipe"]:
                 # For seek commands, press the key multiple times
-                for _ in range(5):  # 5 key presses = 10 seconds
+                for _ in range(3):  # Reduced to 3 key presses = 6 seconds
                     pyautogui.press(key)
-                    time.sleep(0.1)
+                    time.sleep(0.05)  # Reduced delay between key presses
             else:
                 pyautogui.press(key)
                 
-            # Update last command time and last gesture
+            # Update last command time
             self.last_command_time = current_time
-            self.last_gesture = gesture
             return True
             
         except Exception as e:
@@ -72,7 +66,7 @@ class TVController:
         return {
             "thumbs_up": "Increase volume",
             "thumbs_down": "Decrease volume",
-            "left_swipe": "Rewind 10 seconds",
-            "right_swipe": "Forward 10 seconds",
+            "left_swipe": "Rewind 6 seconds",
+            "right_swipe": "Forward 6 seconds",
             "stop": "Pause/Play content"
         } 
