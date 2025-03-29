@@ -1,6 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
 env/
-*.pyc
-*.pyo
-*.pyd
-*.pyw
-*.pyz
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Project specific
+training_data/
+fine_tuned_model/
+results/
+*.pth
+*.safetensors
+*.bin
+*.pt
+*.jpg
+*.jpeg
+*.png
+*.mp4
+*.avi
+*.mov
