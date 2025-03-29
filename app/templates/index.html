@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gesture Control Smart TV</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .video-container {
+            margin: 20px auto;
+            position: relative;
+            width: 640px;
+            height: 480px;
+            border: 2px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        #videoElement {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .gesture-display {
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        #gestureResult {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2196F3;
+            margin: 10px 0;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .status.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .status.inactive {
+            background-color: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gesture Control Smart TV</h1>
+        <div class="video-container">
+            <video autoplay="true" id="videoElement"></video>
+        </div>
+        <div class="gesture-display">
+            <h2>Detected Gesture</h2>
+            <div id="gestureResult">No gesture detected</div>
+            <div id="status" class="status inactive">Webcam inactive</div>
+        </div>
+    </div>
+
+    <script>
+        const video = document.querySelector("#videoElement");
+        const gestureResult = document.querySelector("#gestureResult");
+        const status = document.querySelector("#status");
+
+        // Access webcam
+        if (navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function (stream) {
+                    video.srcObject = stream;
+                    status.textContent = "Webcam active";
+                    status.className = "status active";
+                    startGestureDetection();
+                })
+                .catch(function (error) {
+                    console.log("Something went wrong: " + error);
+                    status.textContent = "Error accessing webcam";
+                    status.className = "status inactive";
+                });
+        }
+
+        // Function to detect gestures
+        function startGestureDetection() {
+            setInterval(async () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+                
+                // Convert canvas to blob
+                canvas.toBlob(async (blob) => {
+                    const formData = new FormData();
+                    formData.append('image', blob);
+
+                    try {
+                        const response = await fetch('/detect_gesture', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const result = await response.json();
+                        if (result.gesture) {
+                            gestureResult.textContent = result.gesture;
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                }, 'image/jpeg');
+            }, 1000); // Check every second
+        }
+    </script>
+</body>
+</html> 
